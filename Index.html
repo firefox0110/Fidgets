@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fidget Joy - Tienda & Juego Interactivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* COLORES PASTELES Y ALEGRES DEL PRIMER DISEÑO */
+    :root {
+      --rosa-pastel: #FFB7B2;
+      --amarillo-pastel: #FFE599;
+      --verde-pastel: #B5EAD7;
+      --azul-pastel: #C7CEEA;
+      --lavanda-pastel: #E2F0CB;
+      --morado-suave: #845EC2;
+      --fondo-soft: #FFF9F6;
+      --texto-oscuro: #4A4E69;
+      --sombra: 0 10px 25px rgba(0,0,0,0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--fondo-soft);
+      color: var(--texto-oscuro);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Fredoka', cursive;
+    }
+
+    /* CABECERA FELIZ */
+    header {
+      background: linear-gradient(135deg, var(--rosa-pastel), var(--amarillo-pastel), var(--verde-pastel));
+      padding: 2.5rem 1rem;
+      text-align: center;
+      border-bottom-left-radius: 35px;
+      border-bottom-right-radius: 35px;
+      box-shadow: var(--sombra);
+    }
+
+    header h1 {
+      font-size: 3.2rem;
+      color: #FFF;
+      text-shadow: 3px 3px 0px var(--morado-suave);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--texto-oscuro);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem;
+    }
+
+    /* SECCIÓN DE JUEGO INTERACTIVO (POP-IT GIGANTE) */
+    .popit-game-section {
+      background: white;
+      border-radius: 30px;
+      padding: 2rem;
+      box-shadow: var(--sombra);
+      border: 4px solid var(--azul-pastel);
+      margin-bottom: 3.5rem;
+      text-align: center;
+    }
+
+    .popit-game-section h2 {
+      font-size: 2.2rem;
+      color: var(--morado-suave);
+      margin-bottom: 0.5rem;
+    }
+
+    .popit-game-section p {
+      font-size: 1.05rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .popit-board {
+      background: linear-gradient(135deg, var(--rosa-pastel), var(--amarillo-pastel), var(--verde-pastel), var(--azul-pastel));
+      padding: 20px;
+      border-radius: 30px;
+      display: inline-grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: inset 0 6px 10px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.08);
+      margin: 0 auto;
+    }
+
+    .pop-bubble {
+      width: 100%;
+      padding-top: 100%; /* Mantiene proporción cuadrada/circular */
+      border-radius: 50%;
+      position: relative;
+      cursor: pointer;
+      border: none;
+      box-shadow: inset 0 -4px 6px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.1s, box-shadow 0.1s, filter 0.2s;
+    }
+
+    .pop-bubble::after {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 20%;
+      width: 25%;
+      height: 25%;
+      background: rgba(255,255,255,0.5);
+      border-radius: 50%;
+    }
+
+    /* Colores por filas del Pop-It */
+    .row-1 { background-color: #FF6B6B; }
+    .row-2 { background-color: #FFD93D; }
+    .row-3 { background-color: #6BCB77; }
+    .row-4 { background-color: #4D96FF; }
+    .row-5 { background-color: #9B51E0; }
+
+    /* Estado aplastado/popped */
+    .pop-bubble.popped {
+      box-shadow: inset 0 4px 6px rgba(0,0,0,0.3);
+      transform: scale(0.92);
+      filter: brightness(0.85);
+    }
+
+    .popit-controls {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .pop-counter {
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: var(--lavanda-pastel);
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: var(--morado-suave);
+    }
+
+    .btn-reset {
+      background-color: var(--rosa-pastel);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 15px;
+      font-family: 'Fredoka', cursive;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #E0827D;
+    }
+
+    .btn-reset:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #E0827D;
+    }
+
+    /* NOTA DE AYUDA */
+    .nota-instruccion {
+      background-color: var(--amarillo-pastel);
+      padding: 12px 20px;
+      border-radius: 15px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      border: 2px dashed #E0C068;
+    }
+
+    /* SECCIÓN DE PRODUCTOS EDITABLES */
+    .tienda-titulo {
+      text-align: center;
+      font-size: 2.3rem;
+      color: var(--morado-suave);
+      margin-bottom: 1.5rem;
+    }
+
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
+    .card-producto {
+      background: white;
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: var(--sombra);
+      border: 2px solid #F0F0F0;
+      transition: transform 0.2s;
+    }
+
+    .card-producto:hover {
+      transform: translateY(-5px);
+    }
+
+    /* SUBIR FOTO AL HACER CLIC */
+    .foto-box {
+      width: 100%;
+      height: 200px;
+      background-color: #F6F5FA;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+      border: 2px dashed #CCC;
+      cursor: pointer;
+      text-align: center;
+      padding: 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .foto-box:hover {
+      border-color: var(--morado-suave);
+      background-color: #EEECF8;
+    }
+
+    .foto-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .foto-box .instruccion-foto {
+      color: #888;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .foto-box .instruccion-foto span {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    /* EDICIÓN DIRECTA EN PANTALLA */
+    [contenteditable="true"] {
+      border: 1px dashed transparent;
+      padding: 2px 4px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    [contenteditable="true"]:hover, [contenteditable="true"]:focus {
+      background-color: #FFFDE8;
+      border-color: var(--morado-suave);
+    }
+
+    .card-producto h3 {
+      font-size: 1.35rem;
+      color: var(--texto-oscuro);
+      margin-bottom: 0.3rem;
+    }
+
+    .card-producto .precio {
+      font-size: 1.45rem;
+      font-weight: bold;
+      color: var(--morado-suave);
+      margin-bottom: 0.8rem;
+    }
+
+    .card-producto .descripcion {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 1.2rem;
+    }
+
+    .btn-comprar {
+      width: 100%;
+      background-color: var(--verde-pastel);
+      color: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 12px;
+      font-family: 'Fredoka', cursive;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #8BD2B8;
+    }
+
+    .btn-comprar:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #8BD2B8;
+    }
+
+    /* FOOTER Y MENSAJE SOBRE ANSIEDAD, TDAH Y EXÁMENES */
+    footer {
+      background: linear-gradient(135deg, var(--azul-pastel), var(--lavanda-pastel));
+      padding: 3rem 1rem 2rem 1rem;
+      margin-top: 4rem;
+      border-top-left-radius: 35px;
+      border-top-right-radius: 35px;
+    }
+
+    .seccion-especial-bienestar {
+      background: white;
+      max-width: 850px;
+      margin: 0 auto 2.5rem auto;
+      padding: 2.2rem;
+      border-radius: 25px;
+      box-shadow: var(--sombra);
+      border-left: 8px solid var(--rosa-pastel);
+    }
+
+    .seccion-especial-bienestar h3 {
+      font-size: 1.7rem;
+      color: var(--morado-suave);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .seccion-especial-bienestar p {
+      font-size: 1.05rem;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .puntos-clave {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .tag-bienestar {
+      background-color: var(--amarillo-pastel);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .copyright {
+      text-align: center;
+      font-weight: bold;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <header>
+    <h1>✨ Fidget Joy ✨</h1>
+    <p>Tu espacio de calma, energía y concentración</p>
+  </header>
+
+  <div class="container">
+
+    <!-- JUEGO INTERACTIVO POP-IT GIGANTE -->
+    <section class="popit-game-section">
+      <h2>🟡 Pop-It Virtual Interactivo 🟣</h2>
+      <p>¡Prueba aplastar las burbujas para relajarte y liberar estrés!</p>
+
+      <div class="popit-board" id="popit-board">
+        <!-- Generado dinámicamente con JavaScript -->
+      </div>
+
+      <div class="popit-controls">
+        <div class="pop-counter">Pops realizados: <span id="pop-count">0</span></div>
+        <button class="btn-reset" onclick="resetPopIt()">🔄 Desvoltear Pop-It</button>
+      </div>
+    </section>
+
+    <!-- INDICACIÓN DE EDICIÓN -->
+    <div class="nota-instruccion">
+      💡 <strong>Personaliza tu tienda:</strong> Haz clic en cualquier nombre, precio o descripción para cambiarlos directamente. Toca la caja gris superior para subir tus fotos.
+    </div>
+
+    <!-- SECCIÓN DE PRODUCTOS (MÁS TARJETAS) -->
+    <h2 class="tienda-titulo">Nuestros Fidgets</h2>
+    <div class="productos-grid">
+
+      <!-- Producto 1 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(1)">
+          <div class="instruccion-foto" id="placeholder-1"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-1" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-1" accept="image/*" onchange="cargarImagen(event, 1)">
+        <h3 contenteditable="true">Pop-It Rainbow</h3>
+        <div class="precio" contenteditable="true">$8.50</div>
+        <p class="descripcion" contenteditable="true">Burbujas táctiles para aliviar la tensión antes de exámenes o presentaciones.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(2)">
+          <div class="instruccion-foto" id="placeholder-2"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-2" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-2" accept="image/*" onchange="cargarImagen(event, 2)">
+        <h3 contenteditable="true">Spinner Giratorio Silent</h3>
+        <div class="precio" contenteditable="true">$12.00</div>
+        <p class="descripcion" contenteditable="true">Giro fluido y completamente silencioso, perfecto para usar dentro de clase o biblioteca.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+      <!-- Producto 3 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(3)">
+          <div class="instruccion-foto" id="placeholder-3"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-3" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-3" accept="image/*" onchange="cargarImagen(event, 3)">
+        <h3 contenteditable="true">Cubo Infinity Focus</h3>
+        <div class="precio" contenteditable="true">$15.00</div>
+        <p class="descripcion" contenteditable="true">Ayuda a mantener las manos ocupadas para mejorar la atención en personas con TDAH.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+      <!-- Producto 4 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(4)">
+          <div class="instruccion-foto" id="placeholder-4"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-4" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-4" accept="image/*" onchange="cargarImagen(event, 4)">
+        <h3 contenteditable="true">Malla Sensorial con Canica</h3>
+        <div class="precio" contenteditable="true">$5.00</div>
+        <p class="descripcion" contenteditable="true">Suave y discreta. Desliza la canica de un lado a otro para calmar la ansiedad rápidamente.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+      <!-- Producto 5 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(5)">
+          <div class="instruccion-foto" id="placeholder-5"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-5" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-5" accept="image/*" onchange="cargarImagen(event, 5)">
+        <h3 contenteditable="true">Anillos Antiestrés Magnéticos</h3>
+        <div class="precio" contenteditable="true">$11.50</div>
+        <p class="descripcion" contenteditable="true">Gíralos y realiza trucos en tus dedos para canalizar momentos de inquietud o hiperactividad.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+      <!-- Producto 6 -->
+      <div class="card-producto">
+        <div class="foto-box" onclick="seleccionarImagen(6)">
+          <div class="instruccion-foto" id="placeholder-6"><span>📷</span>Haz clic para añadir foto</div>
+          <img id="img-preview-6" src="" alt="" style="display:none;">
+        </div>
+        <input type="file" id="file-input-6" accept="image/*" onchange="cargarImagen(event, 6)">
+        <h3 contenteditable="true">Squishy Suave Anti-Estrés</h3>
+        <div class="precio" contenteditable="true">$7.00</div>
+        <p class="descripcion" contenteditable="true">Textura súper blanda que recupera su forma lentamente al apretarla duro.</p>
+        <button class="btn-comprar">Añadir al carrito 🛒</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- PIE DE PÁGINA CON EL MENSAJE SOBRE BIENESTAR, EXÁMENES, TDAH Y ANSIEDAD -->
+  <footer>
+    <div class="seccion-especial-bienestar">
+      <h3>💛 Esta no va a ser una tienda cualquiera</h3>
+      <p>
+        Queremos que este sea un lugar especial. Esta mercancía está hecha y elegida especialmente para personas que conviven con <strong>ansiedad, estrés, TDAH (Trastorno por Déficit de Atención e Hiperactividad)</strong> o sobrecarga sensorial.
+      </p>
+      <p>
+        Por ejemplo, estas herramientas te ayudarán a **mantener la calma en momentos de exámenes**, canalizar la energía de tus manos en horas de estudio y controlar los niveles de estrés para estudiar con mayor claridad y tranquilidad.
+      </p>
+
+      <div class="puntos-clave">
+        <span class="tag-bienestar">📚 Ideal para exámenes</span>
+        <span class="tag-bienestar">🧠 Concentración y TDAH</span>
+        <span class="tag-bienestar">🌱 Control de ansiedad y estrés</span>
+        <span class="tag-bienestar">✨ Estimulación táctil positiva</span>
+      </div>
+    </div>
+
+    <div class="copyright">
+      &copy; 2026 Fidget Joy - Todos los derechos reservados.
+    </div>
+  </footer>
+
+  <script>
+    // LÓGICA DEL JUEGO POP-IT INTERACTIVO
+    let totalPops = 0;
+    const board = document.getElementById('popit-board');
+    const popCountElem = document.getElementById('pop-count');
+
+    // Generar 30 burbujas (5 filas de 6)
+    const rows = ['row-1', 'row-2', 'row-3', 'row-4', 'row-5'];
+    for (let i = 0; i < 30; i++) {
+      const bubble = document.createElement('button');
+      const rowIndex = Math.floor(i / 6);
+      bubble.className = `pop-bubble ${rows[rowIndex]}`;
+      bubble.addEventListener('click', () => popBubble(bubble));
+      board.appendChild(bubble);
+    }
+
+    function popBubble(bubble) {
+      if (!bubble.classList.contains('popped')) {
+        bubble.classList.add('popped');
+        totalPops++;
+        popCountElem.innerText = totalPops;
+        reproducirSonidoPop();
+
+        if ('vibrate' in navigator) {
+          navigator.vibrate(40);
+        }
+      } else {
+        bubble.classList.remove('popped');
+        reproducirSonidoPop(true);
+      }
+    }
+
+    function resetPopIt() {
+      const bubbles = document.querySelectorAll('.pop-bubble');
+      bubbles.forEach(b => b.classList.remove('popped'));
+    }
+
+    // Efecto de sonido con Web Audio API (sin archivos externos)
+    function reproducirSonidoPop(isReverse = false) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        const startFreq = isReverse ? 220 : 440;
+        const endFreq = isReverse ? 440 : 180;
+
+        osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.08);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (e) {
+        // En caso de que el navegador no lo soporte
+      }
+    }
+
+    // LÓGICA PARA SUBIR IMÁGENES
+    function seleccionarImagen(id) {
+      document.getElementById(`file-input-${id}`).click();
+    }
+
+    function cargarImagen(event, id) {
+      const archivo = event.target.files[0];
+      if (archivo) {
+        const lector = new FileReader();
+        lector.onload = function(e) {
+          const imgPreview = document.getElementById(`img-preview-${id}`);
+          const placeholder = document.getElementById(`placeholder-${id}`);
+          
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = 'block';
+          placeholder.style.display = 'none';
+        }
+        lector.readAsDataURL(archivo);
+      }
+    }
+  </script>
+
+</body>
+</html>
